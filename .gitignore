@@ -1,38 +1,40 @@
-# Python-generated files
+# Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[oc]
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
 build/
 dist/
+site/
 wheels/
 *.egg-info
 
 # Virtual environments
-.venv
+.env
+.venv/
+venv/
 
-# ruff-generated files
+# Cache
+.cache/
+.mypy_cache/
+.pytest_cache/
 .ruff_cache/
+.tox/
 
-# Jupyter Notebook
+# Jupyter Notebooks
 .ipynb_checkpoints
 
-# docs
-docs/_build/
-docs/build/
-# exclude all api doc files, except index.rst
+# Sphinx auto-summary
 docs/source/api/*
 !docs/source/api/index.rst
 
-# Pycharm
+# IntelliJ
 .idea/
+.run/
+
+# macOS
+.DS_Store
 
 # VSCode
 .vscode/
-
-# pytest
-.pytest_cache/
-
-# mypy
-.mypy_cache/
-
-# uv
-uv.toml
