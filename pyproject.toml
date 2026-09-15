@@ -1,6 +1,6 @@
 [project]
 name = "assetlife"
-version = "0.1.2"
+version = "0.1.3.dev1"
 description = "Python library leveraging stochastic modeling to guide decision-making in asset management"
 readme = "README.md"
 authors = [{name = "Thomas Guillon et al."}]
@@ -189,4 +189,26 @@ doctest_optionflags = ["NORMALIZE_WHITESPACE", "IGNORE_EXCEPTION_DETAIL", "ELLIP
 filterwarnings = ["error"]
 log_level = "INFO"
 strict = true
+
+# tox
+
+[tool.tox]
+requires = ["tox-uv>=1"]
+env_list = [
+  "3.11",
+  "3.12",
+  "3.13",
+  "3.14",
+]
+
+[tool.tox.env_run_base]
+description = "test with {base_python}"
+runner = "uv-venv-lock-runner"
+dependency_groups = ["test"]
+commands = [
+  [
+    "pytest",
+    { replace = "posargs", default = [], extend = true },
+  ],
+]
 
