@@ -19,9 +19,7 @@
     "formatComments": true,
     "printWidth": 88
   },
-  "excludes": [
-    "**/*-lock.json", "**/*.lock", "dist/"
-  ],
+  "excludes": ["**/*-lock.json", "**/*.lock", "dist/"],
   "plugins": [
     "npm:@dprint/json@0.24.0",
     "npm:@dprint/markdown@0.24.0",

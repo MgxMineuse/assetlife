@@ -32,7 +32,6 @@ jobs:
       - name: ruff format
         run: uv run ruff format --check
 
-
   test:
     name: test
     timeout-minutes: 10
@@ -43,7 +42,7 @@ jobs:
         os: [ubuntu, windows]
         py: ["3.11", "3.12", "3.13", "3.14"]
 
-      steps: # see GH Actions in uv docs for recommandations
+      steps: #  see GH Actions in uv docs for recommandations
         - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
         - name: Install uv
