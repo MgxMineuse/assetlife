@@ -53,7 +53,7 @@ jobs:
 
       - name: Install dependencies
         shell: bash
-        run: uv pip install --exact --group dev
+        run: uv pip install . --exact --group dev
 
       - name: pytest
         run: pytest
