@@ -254,6 +254,11 @@ The documentation is written in reStructuredText and built with [Sphinx][GH-SPHI
 If you're not familiar with reStructuredText, refer to the
 [docs](https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html)
 
+The documentation requires that [Pandoc](https://pandoc.org/index.html) be installed. To install Pandoc, run:
+```bash
+$ apt install pandoc
+```
+
 To build the documentation, run :
 
 ```bash
