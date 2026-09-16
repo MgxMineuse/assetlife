@@ -26,6 +26,9 @@ jobs:
         with:
           python-version: "3.11"
 
+      - name: dprint
+        run: uv run dprint check
+
       - name: ruff format
         run: uv run ruff format --check
 

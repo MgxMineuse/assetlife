@@ -49,6 +49,7 @@ lint = [
 ]
 format = [
 	{ include-group = "lint" },
+	"dprint-py>=0.57.4.0",
 ]
 test = [
     "lifelines>=0.30.3",
@@ -203,6 +204,7 @@ env_list = [
 
 [tool.tox.env_run_base]
 description = "test with {base_python}"
+labels = ["test"]
 runner = "uv-venv-lock-runner"
 dependency_groups = ["test"]
 commands = [
@@ -212,3 +214,16 @@ commands = [
   ],
 ]
 
+[tool.tox.env.dprint]
+description = "dprint check"
+labels = ["check"]
+runner = "uv-venv-lock-runner"
+dependency_groups = ["format"]
+commands = [
+  [
+    "dprint",
+    "check",
+    "--incremental=false",
+    { replace = "posargs", default = [], extend = true },
+  ],
+]
