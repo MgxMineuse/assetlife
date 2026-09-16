@@ -160,7 +160,7 @@ dev = [
     { name = "sphinx-copybutton" },
     { name = "sphinx-design" },
 ]
-doc = [
+docs = [
     { name = "jupyterlab" },
     { name = "nbsphinx" },
     { name = "pandas" },
@@ -221,7 +221,7 @@ dev = [
     { name = "sphinx-copybutton", specifier = ">=0.5.2" },
     { name = "sphinx-design", specifier = ">=0.7.0" },
 ]
-doc = [
+docs = [
     { name = "jupyterlab", specifier = ">=4.6.3" },
     { name = "nbsphinx", specifier = ">=0.9.8" },
     { name = "pandas", specifier = ">=2.3.3" },

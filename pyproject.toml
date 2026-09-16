@@ -36,7 +36,7 @@ extra = [
   "jupyterlab>=4.6.3",
   "pandas>=2.3.3",
 ]
-doc = [
+docs = [
   { include-group = "extra" },
   "nbsphinx>=0.9.8",
   "pydata-sphinx-theme>=0.21.0",
@@ -63,7 +63,7 @@ type = [
 ]
 dev = [
   { include-group = "extra" },
-  { include-group = "doc" },
+  { include-group = "docs" },
   { include-group = "lint" },
   { include-group = "format" },
   { include-group = "test" },
@@ -226,4 +226,14 @@ commands = [
     "--incremental=false",
     { replace = "posargs", default = [], extend = true },
   ],
+]
+
+[tool.tox.env.docs]
+description = "sphinx build"
+labels = ["docs"]
+runner = "uv-venv-lock-runner"
+dependency_groups = ["docs"]
+commands = [
+    ["sphinx-build", "-M", "html", "./docs/source", "./docs/build", "--quiet", "--fail-on-warning"],
+    ["python", "-c", "print(f'Documentation can be accessed at : docs/build/html')"],
 ]
