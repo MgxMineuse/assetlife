@@ -20,6 +20,9 @@ classifiers = [
   "Operating System :: OS Independent",
   "Programming Language :: Python :: 3",
   "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
   "Typing :: Typed",
   "Intended Audience :: Science/Research",
   "Intended Audience :: Education",
@@ -234,6 +237,14 @@ labels = ["docs"]
 runner = "uv-venv-lock-runner"
 dependency_groups = ["docs"]
 commands = [
-    ["sphinx-build", "-M", "html", "./docs/source", "./docs/build", "--quiet", "--fail-on-warning"],
-    ["python", "-c", "print(f'Documentation can be accessed at : docs/build/html')"],
+  [
+    "sphinx-build",
+    "-M",
+    "html",
+    "./docs/source",
+    "./docs/build",
+    "--quiet",
+    "--fail-on-warning",
+  ],
+  ["python", "-c", "print(f'Documentation can be accessed at : docs/build/html')"],
 ]
