@@ -1,0 +1,33 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+    allow:
+      - dependency-type: all
+    labels:
+      - "topic: github actions"
+    groups:
+      actions:
+        patterns: ["*"]
+    cooldown:
+      default-days: 7
+
+  - package-ecosystem: uv
+    versioning-strategy: increase
+    directory: /
+    schedule:
+      interval: weekly
+    allow:
+      - dependency-type: all
+    ignore:
+      - dependency-name: numpy
+      - dependency-name: typing-extensions
+    labels:
+      - "topic: dependencies"
+    groups:
+      actions:
+        patterns: ["*"]
+    cooldown:
+      default-days: 7
