@@ -33,5 +33,7 @@
 - **Documentation:** https://docs.assetlife.org
 - **Source code:** https://github.com/assetlife-project/assetlife
 - **Bug reports:** https://github.com/assetlife-project/assetlife/issues
+- **Code of conduct:** https://github.com/assetlife-project/assetlife/blob/main/CODE_OF_CONDUCT.md
+- **Contributing** https://github.com/assetlife-project/assetlife/blob/main/CONTRIBUTING.md
 
 This project is hosted by the [Linux Foundation Energy](https://lfenergy.org/).
