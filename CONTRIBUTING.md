@@ -120,8 +120,8 @@ the project:
   (Since we can't be sure at this point whether it is a bug or not, we ask you
   not to talk about a bug yet and not to label the issue.)
 - Explain the behavior you would expect and the actual behavior.
-- Please provide as much context as possible and describe the *reproduction
-  steps* that someone else can follow to recreate the issue on their own. This
+- Please provide as much context as possible and describe the _reproduction
+  steps_ that someone else can follow to recreate the issue on their own. This
   usually includes your code. For good bug reports you should isolate the
   problem and create a reduced test case.
 - Provide the information you collected in the previous section.
@@ -254,10 +254,7 @@ The documentation is written in reStructuredText and built with [Sphinx][GH-SPHI
 If you're not familiar with reStructuredText, refer to the
 [docs](https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html)
 
-The documentation requires that [Pandoc](https://pandoc.org/index.html) be installed. To install Pandoc, run:
-```bash
-$ apt install pandoc
-```
+The documentation requires [Pandoc](https://pandoc.org/index.html) to be installed on your system.
 
 To build the documentation, run :
 
