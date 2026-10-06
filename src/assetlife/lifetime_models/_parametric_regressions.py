@@ -45,7 +45,7 @@ class LinearCovarEffect(ParametricModel):
         Coefficients of the covariates effect.
     """
 
-    def __init__(self, *coefficients: float):
+    def __init__(self, *coefficients: float | None):
         super().__init__(*coefficients)
 
     def g(self, *covar: CoercibleFloat64_ND) -> Float64_ND:
@@ -63,11 +63,9 @@ class LinearCovarEffect(ParametricModel):
         """
         nb_coef = self.get_params().size
         if len(covar) != nb_coef:
-            raise ValueError(
-                f"""
+            raise ValueError(f"""
                 Invalid number of covar. Got {nb_coef} coefficients but {len(covar)} covariates are given.
-                """
-            )
+                """)
         broadcasted_covar = np.broadcast_arrays(*covar)
         stack_covar = np.stack(broadcasted_covar, axis=-1)
         return np.exp(np.sum(stack_covar * self.get_params(), axis=-1))
@@ -244,11 +242,13 @@ class ParametricLifetimeRegression(
         self,
         size: int | tuple[int, ...] | None = None,
         *covar: CoercibleFloat64_ND,
-        seed: int
-        | np.random.Generator
-        | np.random.BitGenerator
-        | np.random.RandomState
-        | None = None,
+        seed: (
+            int
+            | np.random.Generator
+            | np.random.BitGenerator
+            | np.random.RandomState
+            | None
+        ) = None,
     ) -> Float64_ND:
         return super().rvs(
             size,
@@ -293,6 +293,53 @@ class ParametricLifetimeRegression(
         entry: onp.Array1D[np.float64] | None = None,
         **kwargs: Any,
     ) -> Self:
+        """
+        Fit the model parameters by maximum likelihood.
+
+        The model is fitted using the provided observation times and
+        covariates. The likelihood is initialized through
+        :meth:`init_likelihood`, then optimized to obtain the optimal model
+        parameters.
+
+        Parameters
+        ----------
+        time : array-like of shape (n_samples,) or (n_samples, 2)
+            Observation times.
+
+            If one-dimensional, each value represents the observed time.
+            If two-dimensional, each row represents an interval with the
+            corresponding entry and exit times.
+
+        covar : array-like of shape (n_samples,) or sequence of array-like
+            Covariates used by the model. A one-dimensional array is treated
+            as a single covariate. When multiple covariates are provided, they
+            must contain the same number of observations.
+
+        event : array-like of bool, optional
+            Boolean indicator specifying whether an event was observed for
+            each observation. ``True`` indicates that the event occurred and
+            ``False`` indicates censoring.
+
+            If ``None``, the default behavior of the likelihood is used.
+
+        entry : array-like of float, optional
+            Entry times for left-truncated observations. Must have the same
+            length as ``time`` when provided.
+
+            If ``None``, observations are assumed to enter the risk set at
+            time zero.
+
+        **kwargs : Any
+            Additional keyword arguments passed to :meth:`init_likelihood`.
+
+        Returns
+        -------
+        Self
+            The fitted model instance. The optimized parameters are stored in
+            the model, and the optimization results are available through
+            ``fitting_results``.
+
+        """
         if not isinstance(covar, Sequence):
             covar = (covar,)
         optimizer = self.init_likelihood(
@@ -317,16 +364,20 @@ def init_regression_params_from_lifetimes(
 
 def get_regression_params_bounds(model: ParametricLifetimeRegression) -> Bounds:
     nb_coefficients = model.covar_effect.get_params().size
-    lb = np.concatenate((
-        np.full(nb_coefficients, -np.inf),
-        get_distrib_params_bounds(
-            model.baseline
-        ).lb,  # baseline has _params_bounds according to typing
-    ))
-    ub = np.concatenate((
-        np.full(nb_coefficients, np.inf),
-        get_distrib_params_bounds(model.baseline).ub,
-    ))
+    lb = np.concatenate(
+        (
+            np.full(nb_coefficients, -np.inf),
+            get_distrib_params_bounds(
+                model.baseline
+            ).lb,  # baseline has _params_bounds according to typing
+        )
+    )
+    ub = np.concatenate(
+        (
+            np.full(nb_coefficients, np.inf),
+            get_distrib_params_bounds(model.baseline).ub,
+        )
+    )
     return Bounds(lb, ub)
 
 
