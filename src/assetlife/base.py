@@ -5,7 +5,7 @@ from __future__ import annotations
 import warnings
 from abc import ABC, abstractmethod
 from collections.abc import Callable, Iterator, Sequence
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, asdict
 from typing import (
     Any,
     Generic,
@@ -16,12 +16,22 @@ from typing import (
 )
 from typing_extensions import override
 
+import json
+from pathlib import Path
 import numpy as np
 import optype.numpy as onp
 from scipy import stats
 from scipy.optimize import approx_fprime, minimize
 
 __all__ = ["FitConfig", "MaximumLikelihoodOptimizer", "ParametricModel"]
+
+
+def _to_json(obj):
+    if isinstance(obj, np.ndarray):
+        return obj.tolist()
+    if isinstance(obj, np.generic):
+        return obj.item()
+    raise TypeError(f"Object of type {type(obj).__name__} is not serializable in JSON")
 
 
 @final
@@ -161,6 +171,76 @@ class ParametricModel:
             self._params.set_leaf(f"{name}.params", value._params)
         super().__setattr__(name, value)
 
+    def save(self, path: str | Path) -> None:
+        """
+        Save the fitting results of the model.
+
+        Parameters
+        ----------
+        path: str or Path
+            JSON filepath.
+
+        Raises
+        ------
+        ValueError
+            If the filepath extension isn't JSON.
+        """
+        res = dict()
+        if Path(path).suffix == ".json":
+            if self.fitting_results is not None:
+                res["fitting_results"] = asdict(self.fitting_results)
+            if self._params is not None:
+                res["params"] = self.get_params()
+            Path(path).write_text(json.dumps(res, default=_to_json, indent=2))
+        else:
+            raise ValueError("File has to be JSON")
+
+    @classmethod
+    def load(cls, path: str | Path) -> ParametricModel:
+        """
+        Load the fitting results of the model and set its parameters.
+
+        Parameters
+        ----------
+        path: str or Path
+            JSON filepath.
+
+        Raises
+        ------
+        FileNotFoundError
+            If the path doesn't exist.
+        """
+        path = Path(path)
+
+        if not path.exists():
+            raise FileNotFoundError(path)
+
+        model = cls()
+        with path.open("r", encoding="utf-8") as f:
+            res = json.load(f)
+
+            fitting_results = res.get("fitting_results", None)
+
+            if fitting_results is not None:
+                model.fitting_results = FittingResults(
+                    fitting_results["nb_observations"],
+                    np.asarray(fitting_results["optimal_params"], dtype=np.float64),
+                    fitting_results["success"],
+                    fitting_results["neg_log_likelihood"],
+                    (
+                        np.asarray(
+                            fitting_results["covariance_matrix"], dtype=np.float64
+                        )
+                        if fitting_results["covariance_matrix"] is not None
+                        else None
+                    ),
+                )
+
+            params = res.get("params", None)
+            if params is not None:
+                model.set_params(params)
+        return model
+
 
 @dataclass
 class FittingResults:
@@ -210,10 +290,14 @@ class FittingResults:
         self.ic = None
         if self.covariance_matrix is not None:
             self.se = np.sqrt(np.diag(self.covariance_matrix))
-            self.ic = self.optimal_params.reshape(-1, 1) + stats.norm.ppf((
-                0.05,
-                0.95,
-            )) * self.se.reshape(-1, 1) / np.sqrt(self.nb_observations)  # (p, 2)
+            self.ic = self.optimal_params.reshape(-1, 1) + stats.norm.ppf(
+                (
+                    0.05,
+                    0.95,
+                )
+            ) * self.se.reshape(-1, 1) / np.sqrt(
+                self.nb_observations
+            )  # (p, 2)
 
     @override
     def __str__(self) -> str:
