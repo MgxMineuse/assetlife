@@ -294,51 +294,48 @@ class ParametricLifetimeRegression(
         **kwargs: Any,
     ) -> Self:
         """
-        Fit the model parameters by maximum likelihood.
-
-        The model is fitted using the provided observation times and
-        covariates. The likelihood is initialized through
-        :meth:`init_likelihood`, then optimized to obtain the optimal model
-        parameters.
+        Estimate the model parameters from lifetime data.
 
         Parameters
         ----------
-        time : array-like of shape (n_samples,) or (n_samples, 2)
-            Observation times.
+        time : ndarray of shape (n_samples,) or (n_samples, 2)
+            Observed lifetimes.
 
-            If one-dimensional, each value represents the observed time.
-            If two-dimensional, each row represents an interval with the
-            corresponding entry and exit times.
+            - If 1D, each value is either a complete or a right-censored
+              lifetime. Use ``event`` to indicate which values are
+              right-censored.
+            - If 2D, each row encodes a lifetime as an interval
+              ``[lower, upper]``. A complete lifetime is encoded as ``[x, x]``,
+              a right-censored lifetime as ``[x, np.inf]``, a left-censored
+              lifetime as ``[0., x]``, and an interval-censored lifetime as
+              ``[a, b]``. In this format, ``event`` is ignored.
+        covar : ndarray of shape (n_samples, n_covariates) or sequence of 1D ndarray
+            Covariate values for each sample. If a sequence of 1D arrays is
+            given, each array holds the values of one covariate.
+        event : ndarray of shape (n_samples,) of bool, default None
+            Event indicators for 1D ``time``: ``True`` if the lifetime is
+            complete (failure observed), ``False`` if it is right-censored.
+            If None, all lifetimes are considered complete.
+        entry : ndarray of shape (n_samples,), default None
+            Left-truncation times, i.e. the age at which each sample entered
+            observation. If None, no left truncation is applied.
+        **kwargs
+            Extra keyword arguments passed to `scipy.optimize.minimize
+            <https://docs.scipy.org/doc/scipy/reference/generated/scipy.optimize.minimize.html>`_,
+            which searches for the parameters minimizing the negative
+            log-likelihood.
 
-        covar : array-like of shape (n_samples,) or sequence of array-like
-            Covariates used by the model. A one-dimensional array is treated
-            as a single covariate. When multiple covariates are provided, they
-            must contain the same number of observations.
-
-        event : array-like of bool, optional
-            Boolean indicator specifying whether an event was observed for
-            each observation. ``True`` indicates that the event occurred and
-            ``False`` indicates censoring.
-
-            If ``None``, the default behavior of the likelihood is used.
-
-        entry : array-like of float, optional
-            Entry times for left-truncated observations. Must have the same
-            length as ``time`` when provided.
-
-            If ``None``, observations are assumed to enter the risk set at
-            time zero.
-
-        **kwargs : Any
-            Additional keyword arguments passed to :meth:`init_likelihood`.
+            The additional keyword ``covariance_method`` controls how the
+            covariance matrix of the estimated parameters is computed. Allowed
+            values are ``"cs"``, ``"2point"``, ``"exact"`` or ``False``. If
+            ``False``, the covariance is not estimated. If ``"exact"``, ``hess``
+            must also be provided. If not set, the model's default method is
+            used.
 
         Returns
         -------
-        Self
-            The fitted model instance. The optimized parameters are stored in
-            the model, and the optimization results are available through
-            ``fitting_results``.
-
+        self : ParametricLifetimeRegression
+            The fitted model. Estimated parameters are set in place.
         """
         if not isinstance(covar, Sequence):
             covar = (covar,)
@@ -642,7 +639,7 @@ class ParametricAcceleratedFailureTime(ParametricLifetimeRegression):
         baseline_hf_t0 = self.baseline.hf(t0)
         return np.concatenate(
             (
-                -jac_g / g * t0 * baseline_hf_t0,  #  (nb_coef, ...)
+                -jac_g / g * t0 * baseline_hf_t0,  # (nb_coef, ...)
                 baseline_jac_chf_t0,  # (p, ...)
             ),
             axis=0,
