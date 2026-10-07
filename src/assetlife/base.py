@@ -165,12 +165,12 @@ class ParametricModel:
 
     def save(self, path: str | Path) -> None:
         """
-        Save the parametric model.
+        Save model to pickle file.
 
         Parameters
         ----------
         path: str or Path
-            JSON filepath.
+            Pickle filepath.
 
         """
         with Path(path).open("wb") as f:
@@ -179,12 +179,12 @@ class ParametricModel:
     @classmethod
     def load(cls, path: str | Path) -> ParametricModel:
         """
-        Load the parametric model from the file.
+        Load model from pickle file.
 
         Parameters
         ----------
         path: str or Path
-            JSON filepath.
+            Pickle filepath.
 
         Raises
         ------
