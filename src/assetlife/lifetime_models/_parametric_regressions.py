@@ -364,20 +364,16 @@ def init_regression_params_from_lifetimes(
 
 def get_regression_params_bounds(model: ParametricLifetimeRegression) -> Bounds:
     nb_coefficients = model.covar_effect.get_params().size
-    lb = np.concatenate(
-        (
-            np.full(nb_coefficients, -np.inf),
-            get_distrib_params_bounds(
-                model.baseline
-            ).lb,  # baseline has _params_bounds according to typing
-        )
-    )
-    ub = np.concatenate(
-        (
-            np.full(nb_coefficients, np.inf),
-            get_distrib_params_bounds(model.baseline).ub,
-        )
-    )
+    lb = np.concatenate((
+        np.full(nb_coefficients, -np.inf),
+        get_distrib_params_bounds(
+            model.baseline
+        ).lb,  # baseline has _params_bounds according to typing
+    ))
+    ub = np.concatenate((
+        np.full(nb_coefficients, np.inf),
+        get_distrib_params_bounds(model.baseline).ub,
+    ))
     return Bounds(lb, ub)
 
 

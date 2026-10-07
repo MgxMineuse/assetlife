@@ -290,14 +290,10 @@ class FittingResults:
         self.ic = None
         if self.covariance_matrix is not None:
             self.se = np.sqrt(np.diag(self.covariance_matrix))
-            self.ic = self.optimal_params.reshape(-1, 1) + stats.norm.ppf(
-                (
-                    0.05,
-                    0.95,
-                )
-            ) * self.se.reshape(-1, 1) / np.sqrt(
-                self.nb_observations
-            )  # (p, 2)
+            self.ic = self.optimal_params.reshape(-1, 1) + stats.norm.ppf((
+                0.05,
+                0.95,
+            )) * self.se.reshape(-1, 1) / np.sqrt(self.nb_observations)  # (p, 2)
 
     @override
     def __str__(self) -> str:
